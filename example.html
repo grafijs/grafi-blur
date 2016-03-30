@@ -1,0 +1,43 @@
+<html>
+  <input type="file" id="input" onchange="reader.readAsDataURL(this.files[0])">
+  <h1>original</h1>
+  <img id="original">
+  <h1>processed</h1>
+  <div id="slider">
+    <input id="level" type="range" min="1" max="3" value="1" step="1"/>
+    <label id="label">1</label>
+  </div>
+  <canvas id="canvas" hidden></canvas>
+  <canvas id="output"></canvas>
+  <script src="grafi-blur.js"></script>
+  <script>
+    var slider = document.getElementById('slider')
+    var level = document.getElementById('level')
+    var label = document.getElementById('label')
+    var original = document.getElementById('original')
+    var canvas = document.getElementById('canvas')
+    var output = document.getElementById('output')
+    var canvasCtx = canvas.getContext('2d')
+    var outputCtx = output.getContext('2d')
+    var reader = new FileReader()
+    reader.onload = function() {
+      original.src = reader.result
+    }
+    original.onload = function () {
+      slider.hidden = false
+      canvas.width = original.width
+      canvas.height = original.height
+      output.width = original.width
+      output.height = original.height
+      canvasCtx.drawImage(original, 0, 0)
+      newImage = grafi.blur(canvasCtx.getImageData(0, 0, original.width, original.height))
+      outputCtx.putImageData(newImage, 0, 0)
+      level.oninput = function() {
+        var updatedImage = grafi.blur(canvasCtx.getImageData(0, 0, original.width, original.height), {radius: this.value})
+        outputCtx.putImageData(updatedImage, 0, 0)
+        label.innerText = this.value
+      }
+    }
+  </script>
+
+</hmtl>
